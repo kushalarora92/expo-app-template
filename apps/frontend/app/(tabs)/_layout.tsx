@@ -1,12 +1,15 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { Pressable, Alert, Platform } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useAuth } from '@/context/AuthContext';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import WebNavigationBar from '@/components/WebNavigationBar';
+import { useIsDesktop } from '@/utils/responsive';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -19,8 +22,17 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { logout } = useAuth();
+  const pathname = usePathname();
+  const { trackEvent } = useAnalytics();
+
+  // Track screen width for responsive layout (768px breakpoint for tablet/desktop)
+  const isDesktop = useIsDesktop('md');
 
   const handleLogout = () => {
+    trackEvent('logout_button_click', {
+      current_tab: pathname,
+    });
+
     if (Platform.OS === 'web') {
       // Use window.confirm for web
       if (window.confirm('Are you sure you want to logout?')) {
@@ -58,24 +70,49 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        headerTitleAlign: 'center',
+        // Hide tab bar on desktop web (navigation is in header instead)
+        // Show tab bar on mobile web and native
+        tabBarStyle: (Platform.OS === 'web' && isDesktop)
+          ? { display: 'none' }
+          : {
+              shadowColor: Colors[colorScheme ?? 'light'].text,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 3,
+              elevation: 8,
+              borderTopWidth: 0,
+            },
+        // Custom header title component for desktop web (shows navigation)
+        // On mobile web and native, use default title
+        headerTitle: (Platform.OS === 'web' && isDesktop) ? () => <WebNavigationBar /> : undefined,
+        // Logout button on right side of header
+        headerRight: () => (
+          <Pressable onPress={handleLogout}>
+            {({ pressed }) => (
+              <FontAwesome
+                name="sign-out"
+                size={25}
+                color={Colors[colorScheme ?? 'light'].text}
+                style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+              />
+            )}
+          </Pressable>
+        ),
+        // Add subtle shadow/elevation to header
+        headerStyle: {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 4,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          headerRight: () => (
-            <Pressable onPress={handleLogout}>
-              {({ pressed }) => (
-                <FontAwesome
-                  name="sign-out"
-                  size={25}
-                  color={Colors[colorScheme ?? 'light'].text}
-                  style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                />
-              )}
-            </Pressable>
-          ),
         }}
       />
       <Tabs.Screen
