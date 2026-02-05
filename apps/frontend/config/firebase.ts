@@ -1,8 +1,17 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { 
+  getAuth, 
+  Auth,
+  setPersistence,
+  browserLocalPersistence,
+  initializeAuth
+} from 'firebase/auth';
+// @ts-ignore - React Native persistence module
+import { getReactNativePersistence } from 'firebase/auth';
 import { getFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getFunctions, Functions, connectFunctionsEmulator } from 'firebase/functions';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Expo automatically exposes environment variables with EXPO_PUBLIC_ prefix
 const firebaseConfig = {
@@ -27,8 +36,27 @@ if (missingKeys.length > 0) {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Initialize Auth
-const auth: Auth = getAuth(app);
+// Initialize Auth with platform-specific persistence
+// This ensures users stay logged in across app restarts
+let auth: Auth;
+
+if (Platform.OS === 'web') {
+  // Web: Use getAuth with localStorage persistence
+  auth = getAuth(app);
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+      console.log('✓ Firebase Auth persistence enabled (web - localStorage)');
+    })
+    .catch((error) => {
+      console.warn('Failed to set auth persistence:', error);
+    });
+} else {
+  // React Native: Use initializeAuth with AsyncStorage for persistence
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+  console.log('✓ Firebase Auth persistence enabled (React Native - AsyncStorage)');
+}
 
 // Initialize Firestore
 const db: Firestore = getFirestore(app);
