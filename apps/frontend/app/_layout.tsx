@@ -4,12 +4,14 @@ import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { StatusBar, StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-reanimated';
-import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text } from '@gluestack-ui/themed';
 import { config } from '../gluestack-ui.config';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import Colors from '@/constants/Colors';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,54 +33,54 @@ function RootLayoutNav() {
   const router = useRouter();
 
   useEffect(() => {
-    if (loading || profileLoading) return;
+    if (loading || profileLoading) return; // Wait for both auth and profile to load
 
     const inAuthGroup = segments[0] === 'auth';
     const inVerifyEmailScreen = segments[1] === 'verify-email';
     const inProfileSetupScreen = segments[0] === 'profile-setup';
 
-    console.log('Navigation check:', {
-      hasUser: !!user,
-      email: user?.email,
-      emailVerified: user?.emailVerified,
-      needsProfileSetup,
-      inAuthGroup,
-      inVerifyEmailScreen,
-      inProfileSetupScreen,
-      segments,
-    });
-
     if (!user && !inAuthGroup) {
       // Redirect to sign-in if user is not authenticated
-      console.log('Redirecting to sign-in (no user)');
       router.replace('/auth/sign-in' as any);
     } else if (user && !user.emailVerified) {
       // Redirect to verify-email if user is not verified (unless already there)
       if (!inVerifyEmailScreen) {
-        console.log('Redirecting to verify-email (unverified user)');
         router.replace('/auth/verify-email' as any);
       }
     } else if (user && user.emailVerified && needsProfileSetup) {
       // Redirect to profile setup if user needs to complete profile
       if (!inProfileSetupScreen) {
-        console.log('Redirecting to profile-setup (incomplete profile)');
         router.replace('/profile-setup' as any);
       }
     } else if (user && user.emailVerified && !needsProfileSetup && (inAuthGroup || inProfileSetupScreen)) {
-      // Redirect to tabs if user is authenticated, verified, and has completed profile
-      console.log('Redirecting to tabs (complete profile)');
+      // Only redirect to tabs if user is in auth/setup screens, not if already in tabs
       router.replace('/(tabs)');
     }
+    // If already in tabs group, don't redirect - let them stay on current tab
   }, [user, loading, needsProfileSetup, profileLoading, segments]);
+
+  // Show loading screen while auth state and profile are being determined
+  if (loading || profileLoading) {
+    return (
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <View style={[styles.rootContainer, styles.centered, { backgroundColor: Colors[colorScheme].background }]}>
+          <ActivityIndicator size="large" color={Colors[colorScheme].tint} />
+          <Text size="sm" style={{ marginTop: 16, color: Colors[colorScheme].text }}>Loading...</Text>
+        </View>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-        <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <View style={[styles.rootContainer, { backgroundColor: Colors[colorScheme].background }]}>
+        <Stack>
+          <Stack.Screen name="auth" options={{ headerShown: false }} />
+          <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </View>
     </ThemeProvider>
   );
 }
@@ -107,9 +109,23 @@ export default function RootLayout() {
 
   return (
     <GluestackUIProvider config={config} colorMode={colorScheme === 'dark' ? 'dark' : 'light'}>
+      <StatusBar 
+        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} 
+        backgroundColor={Colors[colorScheme].background}
+      />
       <AuthProvider>
         <RootLayoutNav />
       </AuthProvider>
     </GluestackUIProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
