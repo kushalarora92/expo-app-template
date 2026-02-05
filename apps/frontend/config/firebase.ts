@@ -10,6 +10,7 @@ import {
 import { getReactNativePersistence } from 'firebase/auth';
 import { getFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getFunctions, Functions, connectFunctionsEmulator } from 'firebase/functions';
+import { getAnalytics, Analytics, isSupported } from 'firebase/analytics';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,6 +22,7 @@ const firebaseConfig = {
   storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const missingKeys = Object.entries(firebaseConfig)
@@ -64,6 +66,22 @@ const db: Firestore = getFirestore(app);
 // Initialize Functions
 const functions: Functions = getFunctions(app);
 
+// Initialize Analytics (web only - native uses @react-native-firebase/analytics)
+let analytics: Analytics | null = null;
+if (Platform.OS === 'web') {
+  // Check if analytics is supported (not blocked by ad blockers, privacy settings, etc.)
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+      console.log('✓ Firebase Analytics initialized');
+    } else {
+      console.log('ℹ Firebase Analytics not supported (ad blocker or privacy settings)');
+    }
+  }).catch(() => {
+    console.log('ℹ Firebase Analytics initialization skipped');
+  });
+}
+
 // Connect to emulators in development
 // Set EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true in your .env file to use emulators
 const useEmulator = process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
@@ -80,5 +98,5 @@ if (useEmulator && __DEV__) {
   }
 }
 
-export { auth, db, functions };
+export { auth, db, functions, analytics };
 export default app;

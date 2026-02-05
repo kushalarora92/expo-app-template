@@ -44,6 +44,9 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: ^2.2.0
         version: 2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))
+      '@react-native-firebase/analytics':
+        specifier: ^23.4.0
+        version: 23.8.6(@react-native-firebase/app@23.8.6(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))(expo@54.0.33)(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))
       '@react-native-firebase/app':
         specifier: ^23.4.0
         version: 23.8.6(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))(expo@54.0.33)(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -2008,6 +2011,11 @@ packages:
     resolution: {integrity: sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==}
     peerDependencies:
       react-native: ^0.0.0-0 || >=0.65 <1.0
+
+  '@react-native-firebase/analytics@23.8.6':
+    resolution: {integrity: sha512-qRqPQ2F9ZyDOJMviq9onWjC4LttenqVy1F25z6N0s9yUdmtGariuK2zLggJsuONc3dZHX3bL+afFi4QydZRm/A==}
+    peerDependencies:
+      '@react-native-firebase/app': 23.8.6
 
   '@react-native-firebase/app@23.8.6':
     resolution: {integrity: sha512-oHM/0c5CbMSDLzIAjdQTH2im7Lr1AoajDYyehye9ge6zH/tuhCtwXtkf19zE0MyFsSqd06IoYRfZP7W05D4m+w==}
@@ -4361,6 +4369,10 @@ packages:
     resolution: {integrity: sha512-DhuTmvZWux4H1UOnWMB3sk0sbaCVOoQZjv8u1rDoTV0HTdGem9hkAZtl4JZy8P2z4Bg0nT+YMeOFyVr4zcG5Tw==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
+
+  superstruct@2.0.2:
+    resolution: {integrity: sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==}
+    engines: {node: '>=14.0.0'}
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -7788,6 +7800,11 @@ snapshots:
       merge-options: 3.0.4
       react-native: 0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
 
+  '@react-native-firebase/analytics@23.8.6(@react-native-firebase/app@23.8.6(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))(expo@54.0.33)(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      '@react-native-firebase/app': 23.8.6(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))(expo@54.0.33)(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      superstruct: 2.0.2
+
   '@react-native-firebase/app@23.8.6(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))(expo@54.0.33)(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
       firebase: 12.8.0(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)))
@@ -10614,6 +10631,8 @@ snapshots:
       pirates: 4.0.7
       tinyglobby: 0.2.15
       ts-interface-checker: 0.1.13
+
+  superstruct@2.0.2: {}
 
   supports-color@5.5.0:
     dependencies:
