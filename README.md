@@ -45,6 +45,10 @@ A production-ready monorepo template for building cross-platform apps with **Exp
 
 ## 🚀 Getting Started
 
+### Quick Start with AI
+
+The fastest way to build your app: open [`AI_BOOTSTRAP_PROMPT.md`](AI_BOOTSTRAP_PROMPT.md), fill in your app details, and paste it into your AI assistant (GitHub Copilot, Claude, ChatGPT). It has full context of this template's architecture and will generate a complete, polished app for you.
+
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) v20+
