@@ -12,15 +12,13 @@ import {
   Link,
   LinkText,
 } from '@gluestack-ui/themed';
+import { AuthBranding } from '@/components/AuthBranding';
 
 export default function VerifyEmailScreen() {
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [lastSentTime, setLastSentTime] = useState<number | null>(null);
   const { user, sendVerificationEmail, logout } = useAuth();
-
-  // Debug logging
-  console.log('VerifyEmailScreen - user:', user?.email, 'verified:', user?.emailVerified);
 
   // Cooldown timer
   useEffect(() => {
@@ -119,21 +117,10 @@ export default function VerifyEmailScreen() {
   }
 
   return (
-    <Box flex={1} bg="$background" p="$6" justifyContent="center">
-      <VStack space="lg" maxWidth={400} width="100%" alignSelf="center">
+    <Box flex={1} p="$6" justifyContent="center">
+      <VStack space="lg" maxWidth={400} width="100%" alignSelf="center" gap="$8">
+        <AuthBranding />
         <VStack space="md" alignItems="center">
-          <Box
-            w={80}
-            h={80}
-            borderRadius="$full"
-            bg="$blue100"
-            justifyContent="center"
-            alignItems="center"
-            mb="$4"
-          >
-            <Text fontSize={40}>✉️</Text>
-          </Box>
-
           <Heading size="2xl" textAlign="center">Verify Your Email</Heading>
           <Text size="md" color="$textLight600" textAlign="center">
             We've sent a verification email to:
@@ -145,17 +132,28 @@ export default function VerifyEmailScreen() {
 
         <Box bg="$backgroundLight100" p="$4" borderRadius="$lg" w="100%">
           <Text size="md" fontWeight="$semibold" mb="$3">Next Steps:</Text>
-          <Text size="sm" color="$textLight600" mb="$2">1. Check your email inbox</Text>
+          <VStack space="xs" mb="$2">
+            <Text size="sm" color="$textLight600">1. Check your email inbox</Text>
+            <Text size="xs" color="$textLight500" ml="$4" fontStyle="italic">
+              Not in inbox? Check your spam folder
+            </Text>
+          </VStack>
           <Text size="sm" color="$textLight600" mb="$2">2. Click the verification link</Text>
           <Text size="sm" color="$textLight600">3. Return to the app and sign in</Text>
         </Box>
 
-        <Text size="sm" color="$textLight600" textAlign="center">
-          Didn't receive the email? Check your spam folder or request a new one.
-        </Text>
-
         <Button
           size="lg"
+          onPress={handleBackToSignIn}
+          isDisabled={loading}
+        >
+          <ButtonText>Back to Sign In</ButtonText>
+        </Button>
+
+        <Button
+          size="md"
+          variant="outline"
+          action="secondary"
           onPress={handleResendEmail}
           isDisabled={loading || cooldown > 0}
         >
@@ -167,14 +165,6 @@ export default function VerifyEmailScreen() {
               : 'Resend Verification Email'}
           </ButtonText>
         </Button>
-
-        <Link
-          onPress={handleBackToSignIn}
-          isDisabled={loading}
-          alignSelf="center"
-        >
-          <LinkText size="md">Back to Sign In</LinkText>
-        </Link>
       </VStack>
     </Box>
   );

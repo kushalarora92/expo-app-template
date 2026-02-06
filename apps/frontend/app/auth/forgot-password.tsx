@@ -17,6 +17,7 @@ import {
   Link,
   LinkText,
 } from '@gluestack-ui/themed';
+import { AuthBranding } from '@/components/AuthBranding';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -51,7 +52,7 @@ export default function ForgotPasswordScreen() {
 
   if (emailSent) {
     return (
-      <Box flex={1} bg="$background" p="$6" justifyContent="center">
+      <Box flex={1} p="$6" justifyContent="center">
         <VStack space="lg" maxWidth={400} width="100%" alignSelf="center">
           <VStack space="md" alignItems="center">
             <Text fontSize={48}>✉️</Text>
@@ -84,8 +85,9 @@ export default function ForgotPasswordScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <Box flex={1} bg="$background" p="$6" justifyContent="center">
-          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center">
+        <Box flex={1} p="$6" justifyContent="center">
+          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center" gap="$8">
+            <AuthBranding />
             <VStack space="md">
               <Heading size="2xl">Reset Password</Heading>
               <Text size="md" color="$textLight600">

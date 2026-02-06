@@ -19,6 +19,7 @@ import {
   Link,
   LinkText,
 } from '@gluestack-ui/themed';
+import { AuthBranding } from '@/components/AuthBranding';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -38,7 +39,6 @@ export default function SignInScreen() {
 
     try {
       await signIn(email, password);
-      console.log('Sign in successful');
       // Navigation is handled by _layout.tsx
     } catch (err: any) {
       console.error('Sign in error:', err);
@@ -74,14 +74,9 @@ export default function SignInScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <Box flex={1} bg="$background" p="$6" justifyContent="center">
-          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center">
-            <VStack space="md">
-              <Heading size="2xl">Welcome Back</Heading>
-              <Text size="md" color="$textLight600">
-                Sign in to continue your citizenship journey
-              </Text>
-            </VStack>
+        <Box flex={1} p="$6" justifyContent="center">
+          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center" gap="$8">
+            <AuthBranding showTitle={true} showTagline={true} />
 
             <VStack space="xl">
               <FormControl isInvalid={!!error}>

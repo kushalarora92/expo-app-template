@@ -19,6 +19,7 @@ import {
   Link,
   LinkText,
 } from '@gluestack-ui/themed';
+import { AuthBranding } from '@/components/AuthBranding';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -82,12 +83,13 @@ export default function SignUpScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <Box flex={1} bg="$background" p="$6" justifyContent="center">
-          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center">
+        <Box flex={1} p="$6" justifyContent="center">
+          <VStack space="lg" maxWidth={400} width="100%" alignSelf="center" gap="$8">
+            <AuthBranding />
             <VStack space="md">
               <Heading size="2xl">Create Account</Heading>
               <Text size="md" color="$textLight600">
-                Start your journey to Canadian citizenship
+                Sign up to get started
               </Text>
             </VStack>
 
