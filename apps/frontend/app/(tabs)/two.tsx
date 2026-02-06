@@ -1,18 +1,33 @@
 import { useState } from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity, Alert, Platform, TextInput } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useRouter } from 'expo-router';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/context/AuthContext';
 import { useFirebaseFunctions } from '@/hooks/useFirebaseFunctions';
+import { useAnalytics, useScreenTracking } from '@/hooks/useAnalytics';
 
 export default function TabTwoScreen() {
-  const { user, userProfile, profileLoading, sendVerificationEmail, refreshProfile } = useAuth();
+  const { user, userProfile, profileLoading, sendVerificationEmail, refreshProfile, logout } = useAuth();
   const { updateUserProfile } = useFirebaseFunctions();
+  const router = useRouter();
+  const { trackEvent } = useAnalytics();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Track screen view
+  useScreenTracking('Profile');
+
+  // Helper function for consistent tracking
+  const trackProfileAction = (action: string, params?: Record<string, any>) => {
+    trackEvent('profile_action', {
+      action,
+      screen: 'Profile',
+      ...params,
+    });
+  };
 
   const handleEditPress = () => {
     setEditedName(userProfile?.displayName || '');
@@ -168,9 +183,96 @@ export default function TabTwoScreen() {
               : 'N/A'}
           </Text>
         </View>
+
+        {/* Account Management Section */}
+        <View style={styles.accountManagementSection}>
+          <Text style={styles.accountManagementTitle}>Account Management</Text>
+
+          {/* Privacy Policy */}
+          <TouchableOpacity
+            style={styles.accountManagementItem}
+            onPress={() => {
+              trackProfileAction('legal_link_click', { page: 'privacy' });
+              if (Platform.OS === 'web') {
+                window.open('/privacy', '_blank');
+              } else {
+                router.push('/privacy');
+              }
+            }}
+          >
+            <FontAwesome name="shield" size={18} color="#64748b" />
+            <Text style={styles.accountManagementLabel}>Privacy Policy</Text>
+            <FontAwesome name="chevron-right" size={14} color="#94a3b8" />
+          </TouchableOpacity>
+
+          {/* Terms of Service */}
+          <TouchableOpacity
+            style={styles.accountManagementItem}
+            onPress={() => {
+              trackProfileAction('legal_link_click', { page: 'terms' });
+              if (Platform.OS === 'web') {
+                window.open('/terms', '_blank');
+              } else {
+                router.push('/terms');
+              }
+            }}
+          >
+            <FontAwesome name="file-text" size={18} color="#64748b" />
+            <Text style={styles.accountManagementLabel}>Terms of Service</Text>
+            <FontAwesome name="chevron-right" size={14} color="#94a3b8" />
+          </TouchableOpacity>
+
+          {/* Support & Help */}
+          <TouchableOpacity
+            style={[styles.accountManagementItem, styles.accountManagementItemLast]}
+            onPress={() => {
+              trackProfileAction('legal_link_click', { page: 'support' });
+              router.push('/support' as any);
+            }}
+          >
+            <FontAwesome name="question-circle" size={18} color="#64748b" />
+            <Text style={styles.accountManagementLabel}>Support & Help</Text>
+            <FontAwesome name="chevron-right" size={14} color="#94a3b8" />
+          </TouchableOpacity>
+
+          {/* Logout Button */}
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={() => {
+              trackProfileAction('logout_button_click');
+              if (Platform.OS === 'web') {
+                if (window.confirm('Are you sure you want to logout?')) {
+                  logout().catch(() => {
+                    alert('Failed to logout');
+                  });
+                }
+              } else {
+                Alert.alert(
+                  'Logout',
+                  'Are you sure you want to logout?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Logout',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          await logout();
+                        } catch (error) {
+                          Alert.alert('Error', 'Failed to logout');
+                        }
+                      }
+                    },
+                  ]
+                );
+              }
+            }}
+          >
+            <FontAwesome name="sign-out" size={18} color="#fff" />
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
     </ScrollView>
   );
 }
@@ -264,5 +366,55 @@ const styles = StyleSheet.create({
     height: 1,
     width: '90%',
     alignSelf: 'center',
+  },
+  accountManagementSection: {
+    marginTop: 32,
+    padding: 16,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  accountManagementTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
+    color: '#1e293b',
+  },
+  accountManagementItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  accountManagementItemLast: {
+    borderBottomWidth: 0,
+  },
+  accountManagementLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: '#475569',
+    marginLeft: 12,
+  },
+  logoutButton: {
+    marginTop: 16,
+    padding: 16,
+    backgroundColor: '#dc2626',
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+    marginLeft: 8,
   },
 });
