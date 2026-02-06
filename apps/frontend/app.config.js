@@ -1,13 +1,19 @@
 module.exports = {
   expo: {
-    name: 'Journey to Citizen',
-    slug: 'journey-to-citizen',
+    name: 'My App',
+    slug: 'my-app',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'journey-to-citizen',
+    scheme: 'my-app',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
+    owner: 'your-expo-username',
+    extra: {
+      eas: {
+        projectId: 'YOUR_EAS_PROJECT_ID',
+      },
+    },
     splash: {
       image: './assets/images/splash-icon.png',
       resizeMode: 'contain',
@@ -15,7 +21,11 @@ module.exports = {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.journeytocitizen.app',
+      bundleIdentifier: 'com.yourcompany.myapp',
+      googleServicesFile: process.env.GOOGLE_SERVICE_INFO_PLIST || './GoogleService-Info.plist',
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     android: {
       adaptiveIcon: {
@@ -24,16 +34,34 @@ module.exports = {
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
-      package: 'com.journeytocitizen.app',
+      package: 'com.yourcompany.myapp',
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.json',
     },
     web: {
       bundler: 'metro',
       output: 'static',
       favicon: './assets/images/favicon.png',
     },
-    plugins: ['expo-router'],
+    plugins: [
+      'expo-router',
+      '@react-native-firebase/app',
+      [
+        'expo-build-properties',
+        {
+          ios: {
+            useFrameworks: 'static',
+          },
+        },
+      ],
+    ],
     experiments: {
       typedRoutes: true,
+    },
+    updates: {
+      url: 'https://u.expo.dev/YOUR_EAS_PROJECT_ID',
+    },
+    runtimeVersion: {
+      policy: 'sdkVersion',
     },
   },
 };

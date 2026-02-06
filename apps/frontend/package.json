@@ -7,7 +7,15 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "expo start"
+    "dev": "expo start",
+    "postinstall": "cd ../.. && pnpm --filter '@journey-to-citizen/*' --filter '!journey-to-citizen-frontend' build",
+    "build:web": "expo export --platform web --output-dir web-build",
+    "build:android:preview": "eas build --platform android --profile preview",
+    "build:ios:preview": "eas build --platform ios --profile preview",
+    "build:android:prod": "eas build --platform android --profile production",
+    "build:ios:prod": "eas build --platform ios --profile production",
+    "update:preview": "eas update --channel preview --message",
+    "update:production": "eas update --channel production --message"
   },
   "dependencies": {
     "@expo/html-elements": "^0.13.7",
@@ -31,6 +39,8 @@
     "expo-router": "~6.0.10",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
+    "expo-updates": "~29.0.15",
+    "expo-build-properties": "^1.0.9",
     "expo-web-browser": "~15.0.8",
     "firebase": "^12.3.0",
     "nativewind": "^4.2.1",
