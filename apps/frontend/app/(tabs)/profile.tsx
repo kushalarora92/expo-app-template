@@ -9,7 +9,7 @@ import { useFirebaseFunctions } from '@/hooks/useFirebaseFunctions';
 import { useAnalytics, useScreenTracking } from '@/hooks/useAnalytics';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 
-export default function TabTwoScreen() {
+export default function ProfileScreen() {
   const { user, userProfile, profileLoading, sendVerificationEmail, refreshProfile, logout } = useAuth();
   const { updateUserProfile, scheduleAccountDeletion } = useFirebaseFunctions();
   const router = useRouter();
