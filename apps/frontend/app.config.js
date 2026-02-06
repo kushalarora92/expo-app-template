@@ -26,6 +26,7 @@ module.exports = {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
+      usesAppleSignIn: true,
     },
     android: {
       adaptiveIcon: {
@@ -45,6 +46,8 @@ module.exports = {
     plugins: [
       'expo-router',
       '@react-native-firebase/app',
+      '@react-native-google-signin/google-signin',
+      'expo-apple-authentication',
       [
         'expo-build-properties',
         {

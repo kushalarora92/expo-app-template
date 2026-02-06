@@ -65,10 +65,13 @@ The template already has these features fully implemented and working. **Use the
 
 #### Authentication (complete flow)
 - Email/password sign-up, sign-in, password reset, email verification
+- Google Sign-In (native via `@react-native-google-signin/google-signin` + web popup)
+- Apple Sign-In (native via `expo-apple-authentication` + web OAuth)
 - Auth state persistence (survives app restart on both web and native)
 - `AuthContext` with `user`, `userProfile`, `loading`, `needsProfileSetup`, `isScheduledForDeletion`
 - Auth screens: `app/auth/sign-in.tsx`, `sign-up.tsx`, `forgot-password.tsx`, `verify-email.tsx`
 - `AuthBranding` component for consistent branding across auth screens
+- `GoogleSignInButton` and `AppleSignInButton` reusable components
 
 #### Profile Setup & Management
 - First-login profile setup flow (`app/profile-setup.tsx`) with Terms/Privacy agreement
@@ -124,7 +127,9 @@ apps/frontend/
 │   ├── delete-account.tsx       # Public deletion info
 │   └── account-deletion.tsx     # Blocked screen for scheduled deletion
 ├── components/
+│   ├── AppleSignInButton.tsx    # Apple Sign-In button (iOS + web)
 │   ├── AuthBranding.tsx         # Logo + title for auth screens
+│   ├── GoogleSignInButton.tsx   # Google Sign-In button (native + web)
 │   ├── WebContainer.tsx         # Width-limiting container for web
 │   ├── WebNavigationBar.tsx     # Desktop web horizontal nav
 │   ├── DeleteAccountModal.tsx   # Type "DELETE" confirmation modal
@@ -242,6 +247,8 @@ Once all code changes are complete, provide the user with:
 1. **Firebase Project Setup**:
    - Create project at https://console.firebase.google.com
    - Enable Email/Password authentication
+   - Enable Google Sign-In provider (set Web Client ID in `.env`)
+   - Enable Apple Sign-In provider (configure Services ID for web)
    - Create Firestore database
    - Copy Firebase config to `.env` (reference `.env.example`)
    - Enable Analytics (optional)
@@ -278,6 +285,8 @@ Once all code changes are complete, provide the user with:
 
 #### Testing Checklist
 - [ ] Sign up with email/password → verify email → complete profile setup
+- [ ] Sign in with Google → complete profile setup
+- [ ] Sign in with Apple (iOS/web) → complete profile setup
 - [ ] Sign in → land on dashboard with correct data
 - [ ] Test all new tabs/features
 - [ ] Test data persistence (create, read, update)

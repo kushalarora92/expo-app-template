@@ -10,7 +10,7 @@ import { useAnalytics, useScreenTracking } from '@/hooks/useAnalytics';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 
 export default function ProfileScreen() {
-  const { user, userProfile, profileLoading, sendVerificationEmail, refreshProfile, logout } = useAuth();
+  const { user, userProfile, profileLoading, refreshProfile, logout } = useAuth();
   const { updateUserProfile, scheduleAccountDeletion } = useFirebaseFunctions();
   const router = useRouter();
   const { trackEvent } = useAnalytics();
@@ -106,25 +106,6 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleResendVerification = async () => {
-    try {
-      await sendVerificationEmail();
-      const message = 'Verification email sent! Please check your inbox.';
-      if (Platform.OS === 'web') {
-        alert(message);
-      } else {
-        Alert.alert('Success', message);
-      }
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to send verification email';
-      if (Platform.OS === 'web') {
-        alert(`Error: ${errorMessage}`);
-      } else {
-        Alert.alert('Error', errorMessage);
-      }
-    }
-  };
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
@@ -184,30 +165,6 @@ export default function ProfileScreen() {
         <View style={styles.infoBox}>
           <Text style={styles.label}>Email</Text>
           <Text style={styles.value}>{user?.email}</Text>
-        </View>
-
-        {/* Email Verified Section */}
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Email Verified</Text>
-          <Text style={styles.value}>{user?.emailVerified ? '✓ Yes' : '✗ No'}</Text>
-        </View>
-        {!user?.emailVerified && (
-          <TouchableOpacity
-            style={[styles.button, styles.verifyButton]}
-            onPress={handleResendVerification}
-          >
-            <Text style={styles.buttonText}>Resend Verification Email</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Account Created Section */}
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Account Created</Text>
-          <Text style={styles.value}>
-            {user?.metadata.creationTime
-              ? new Date(user.metadata.creationTime).toLocaleDateString()
-              : 'N/A'}
-          </Text>
         </View>
 
         {/* Account Management Section */}
@@ -395,11 +352,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  verifyButton: {
-    backgroundColor: '#3b82f6',
-    marginTop: 8,
-    marginBottom: 16,
   },
   buttonText: {
     color: '#fff',

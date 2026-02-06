@@ -1,12 +1,11 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, usePathname } from 'expo-router';
-import { Pressable, Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { useAuth } from '@/context/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import WebNavigationBar from '@/components/WebNavigationBar';
 import { useIsDesktop } from '@/utils/responsive';
@@ -21,47 +20,11 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { logout } = useAuth();
   const pathname = usePathname();
   const { trackEvent } = useAnalytics();
 
   // Track screen width for responsive layout (768px breakpoint for tablet/desktop)
   const isDesktop = useIsDesktop('md');
-
-  const handleLogout = () => {
-    trackEvent('logout_button_click', {
-      current_tab: pathname,
-    });
-
-    if (Platform.OS === 'web') {
-      // Use window.confirm for web
-      if (window.confirm('Are you sure you want to logout?')) {
-        logout().catch(() => {
-          alert('Failed to logout');
-        });
-      }
-    } else {
-      // Use Alert.alert for mobile
-      Alert.alert(
-        'Logout',
-        'Are you sure you want to logout?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Logout', 
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await logout();
-              } catch (error) {
-                Alert.alert('Error', 'Failed to logout');
-              }
-            }
-          },
-        ]
-      );
-    }
-  };
 
   return (
     <Tabs
@@ -86,19 +49,6 @@ export default function TabLayout() {
         // Custom header title component for desktop web (shows navigation)
         // On mobile web and native, use default title
         headerTitle: (Platform.OS === 'web' && isDesktop) ? () => <WebNavigationBar /> : undefined,
-        // Logout button on right side of header
-        headerRight: () => (
-          <Pressable onPress={handleLogout}>
-            {({ pressed }) => (
-              <FontAwesome
-                name="sign-out"
-                size={25}
-                color={Colors[colorScheme ?? 'light'].text}
-                style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-              />
-            )}
-          </Pressable>
-        ),
         // Add subtle shadow/elevation to header
         headerStyle: {
           shadowColor: '#000',

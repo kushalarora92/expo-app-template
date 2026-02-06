@@ -4,7 +4,7 @@ A production-ready monorepo template for building cross-platform apps with **Exp
 
 ## ✨ What's Included
 
-- 🔐 **Authentication** — Email/password sign-up, sign-in, email verification, password reset
+- 🔐 **Authentication** — Email/password, Google Sign-In, Apple Sign-In, email verification, password reset
 - 👤 **Profile Setup** — First-login profile flow with privacy/terms agreement
 - 🗑️ **Account Deletion** — Full GDPR-compliant 30-day grace period flow
 - 📊 **Firebase Analytics** — Cross-platform analytics hook (web + native)
@@ -224,7 +224,7 @@ pnpm deploy:all           # Build web + deploy everything
 | **Navigation** | Expo Router (file-based) |
 | **Backend** | Firebase Cloud Functions v2 |
 | **Database** | Cloud Firestore |
-| **Auth** | Firebase Authentication |
+| **Auth** | Firebase Authentication (Email, Google, Apple) |
 | **Analytics** | Firebase Analytics |
 | **Monorepo** | Turborepo + pnpm workspaces |
 | **CI/CD** | GitHub Actions + EAS Build |

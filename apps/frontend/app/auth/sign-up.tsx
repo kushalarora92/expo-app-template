@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
+import { AuthBranding } from '@/components/AuthBranding';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { AppleSignInButton } from '@/components/AppleSignInButton';
 import {
   Box,
   VStack,
@@ -18,16 +21,18 @@ import {
   FormControlErrorText,
   Link,
   LinkText,
+  Divider,
 } from '@gluestack-ui/themed';
-import { AuthBranding } from '@/components/AuthBranding';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle, signInWithApple } = useAuth();
 
   const handleSignUp = async () => {
     setError('');
@@ -71,6 +76,62 @@ export default function SignUpScreen() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    setError('');
+
+    try {
+      await signInWithGoogle();
+      // Navigation is handled by _layout.tsx
+    } catch (err: any) {
+      console.error('Google sign in error:', err);
+      
+      let errorMessage = err.message || 'Failed to sign in with Google';
+      
+      // Don't show error for user cancellation
+      if (errorMessage === 'Sign in was cancelled') {
+        setGoogleLoading(false);
+        return;
+      }
+      
+      setError(errorMessage);
+      
+      if (Platform.OS !== 'web') {
+        Alert.alert('Google Sign In Error', errorMessage);
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setAppleLoading(true);
+    setError('');
+
+    try {
+      await signInWithApple();
+      // Navigation is handled by _layout.tsx
+    } catch (err: any) {
+      console.error('Apple sign in error:', err);
+      
+      let errorMessage = err.message || 'Failed to sign in with Apple';
+      
+      // Don't show error for user cancellation
+      if (errorMessage === 'Sign in was cancelled') {
+        setAppleLoading(false);
+        return;
+      }
+      
+      setError(errorMessage);
+      
+      if (Platform.OS !== 'web') {
+        Alert.alert('Apple Sign In Error', errorMessage);
+      }
+    } finally {
+      setAppleLoading(false);
     }
   };
 
@@ -148,10 +209,33 @@ export default function SignUpScreen() {
               <Button
                 size="lg"
                 onPress={handleSignUp}
-                isDisabled={loading}
+                isDisabled={loading || googleLoading || appleLoading}
               >
                 <ButtonText>{loading ? 'Creating Account...' : 'Sign Up'}</ButtonText>
               </Button>
+
+              {/* Divider with "or" text */}
+              <Box flexDirection="row" alignItems="center" gap="$3">
+                <Divider flex={1} />
+                <Text size="sm" color="$textLight500">or</Text>
+                <Divider flex={1} />
+              </Box>
+
+              {/* Apple Sign-In Button - Only show on iOS native and web */}
+              {(Platform.OS === 'ios' || Platform.OS === 'web') && (
+                <AppleSignInButton
+                  onPress={handleAppleSignIn}
+                  isLoading={appleLoading}
+                  label="Sign up with Apple"
+                />
+              )}
+
+              {/* Google Sign-In Button */}
+              <GoogleSignInButton
+                onPress={handleGoogleSignIn}
+                isLoading={googleLoading}
+                label="Sign up with Google"
+              />
 
               <Box flexDirection="row" justifyContent="center" gap="$2">
                 <Text size="sm" color="$textLight600">
