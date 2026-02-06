@@ -1,5 +1,5 @@
 {
-  "name": "journey-to-citizen",
+  "name": "expo-app-template",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "build:web": "pnpm --filter journey-to-citizen-frontend run build:web",
+    "build:web": "pnpm --filter app-frontend run build:web",
     "build:functions": "cd packages/types && pnpm build && cd ../../apps/functions/functions && pnpm run build",
     "deploy:web": "pnpm run build:web && firebase deploy --only hosting",
     "deploy:functions": "pnpm run build:functions && firebase deploy --only functions",

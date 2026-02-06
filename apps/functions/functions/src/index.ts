@@ -17,7 +17,7 @@ import {
   UpdateProfileData,
   ApiResponse,
   DELETION_STATUS,
-} from "@journey-to-citizen/types";
+} from "@my-app/types";
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();

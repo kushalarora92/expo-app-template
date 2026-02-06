@@ -1,5 +1,5 @@
 {
-  "name": "journey-to-citizen-frontend",
+  "name": "app-frontend",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "dev": "expo start",
-    "postinstall": "cd ../.. && pnpm --filter '@journey-to-citizen/*' --filter '!journey-to-citizen-frontend' build",
+    "postinstall": "cd ../.. && pnpm --filter '@my-app/*' --filter '!app-frontend' build",
     "build:web": "expo export --platform web --output-dir web-build",
     "build:android:preview": "eas build --platform android --profile preview",
     "build:ios:preview": "eas build --platform ios --profile preview",
@@ -24,8 +24,8 @@
     "@gluestack-ui/core": "^3.0.10",
     "@gluestack-ui/themed": "^1.1.73",
     "@gluestack-ui/utils": "^3.0.7",
-    "@journey-to-citizen/types": "workspace:*",
-    "@journey-to-citizen/ui": "workspace:*",
+    "@my-app/types": "workspace:*",
+    "@my-app/ui": "workspace:*",
     "@legendapp/motion": "^2.4.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-firebase/analytics": "^23.4.0",

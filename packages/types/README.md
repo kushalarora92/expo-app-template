@@ -1,4 +1,4 @@
-# @journey-to-citizen/types
+# @my-app/types
 
 Shared TypeScript types used across the entire monorepo.
 
@@ -7,7 +7,7 @@ Shared TypeScript types used across the entire monorepo.
 ### In Frontend
 
 ```typescript
-import { UserProfile, UpdateProfileData } from '@journey-to-citizen/types';
+import { UserProfile, UpdateProfileData } from '@my-app/types';
 
 const profile: UserProfile = {
   uid: '123',
@@ -20,7 +20,7 @@ const profile: UserProfile = {
 ### In Cloud Functions
 
 ```typescript
-import { UserProfile, UpdateProfileData } from '@journey-to-citizen/types';
+import { UserProfile, UpdateProfileData } from '@my-app/types';
 
 export const getUserInfo = onCall(async (request): Promise<UserProfile> => {
   // Implementation

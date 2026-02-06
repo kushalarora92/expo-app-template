@@ -2,7 +2,7 @@
 applyTo: '**'
 ---
 # Authentication Instructions (Sign Up / Login)
-These instructions cover the implementation of user authentication features, including sign-up and login functionalities, for the Journey to Citizen app. The authentication system will ensure secure access to user accounts and protect sensitive information.
+These instructions cover the implementation of user authentication features, including sign-up and login functionalities, for the app. The authentication system will ensure secure access to user accounts and protect sensitive information.
 
 ## Requirements
 - Implement secure user authentication using Firebase Authentication.

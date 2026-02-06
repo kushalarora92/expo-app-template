@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/config/firebase';
 import { useFirebaseFunctions } from '@/hooks/useFirebaseFunctions';
-import { UserProfile } from '@journey-to-citizen/types';
+import { UserProfile } from '@my-app/types';
 
 interface AuthContextType {
   user: User | null;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Journey to Citizen - Firebase Development Helper Script
+# App Template - Firebase Development Helper Script
 
 set -e
 
@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║  Journey to Citizen - Dev Helper      ║${NC}"
+echo -e "${BLUE}║  App Template - Dev Helper            ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 

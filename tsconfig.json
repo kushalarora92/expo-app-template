@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@journey-to-citizen/*": ["packages/*/src"]
+      "@my-app/*": ["packages/*/src"]
     },
     "allowJs": true,
     "skipLibCheck": true,

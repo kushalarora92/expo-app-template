@@ -1,6 +1,6 @@
 import { httpsCallable, HttpsCallableResult } from 'firebase/functions';
 import { functions } from '../config/firebase';
-import { UserProfile, UpdateProfileData, ApiResponse } from '@journey-to-citizen/types';
+import { UserProfile, UpdateProfileData, ApiResponse } from '@my-app/types';
 
 /**
  * Hook to interact with Firebase Cloud Functions

@@ -1,5 +1,5 @@
 /**
- * Shared types for Journey to Citizen app
+ * Shared types for the app
  * Used across frontend, backend, and cloud functions
  */
 

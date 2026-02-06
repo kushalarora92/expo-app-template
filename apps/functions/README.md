@@ -1,6 +1,6 @@
 # Firebase Cloud Functions
 
-This directory contains Firebase Cloud Functions for the Journey to Citizen app.
+This directory contains Firebase Cloud Functions for the app.
 
 ## Directory Structure
 
@@ -81,7 +81,7 @@ A simple HTTP function for testing.
 
 **Endpoint:** 
 - Production: `https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/helloWorld`
-- Emulator: `http://localhost:5001/journey-to-citizen/us-central1/helloWorld`
+- Emulator: `http://localhost:5001/YOUR_PROJECT_ID/us-central1/helloWorld`
 
 **Usage:**
 ```bash
@@ -89,7 +89,7 @@ A simple HTTP function for testing.
 curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/helloWorld
 
 # Emulator
-curl http://localhost:5001/journey-to-citizen/us-central1/helloWorld
+curl http://localhost:5001/YOUR_PROJECT_ID/us-central1/helloWorld
 ```
 
 **Response:**

@@ -1,8 +1,9 @@
-# Journey to Citizen
-One platform from the day you land in Canada till your passport 🎉
+# Expo + Firebase App Template
+
+A production-ready monorepo template for cross-platform apps.
 
 ## Overview
-Journey to Citizen is a comprehensive platform designed to assist newcomers to Canada in navigating the various stages of their journey, from arrival to citizenship. 
+This is an Expo + Firebase app template with authentication, profile management, and common app features built-in. 
 
 ## MVP Features
 

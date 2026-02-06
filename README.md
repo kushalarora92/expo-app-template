@@ -1,138 +1,233 @@
-# journey-to-citizen
+# Expo + Firebase App Template
 
-A Turborepo monorepo with Expo (React Native), Firebase Functions, and Firestore.
+A production-ready monorepo template for building cross-platform apps with **Expo** (React Native + Web), **Firebase** (Auth, Firestore, Functions), and **Turborepo**.
 
-## Quick Start
+## ✨ What's Included
 
-**🎉 Production Ready!** All Firebase Functions are deployed and working. See [docs/2.FirebaseIntegration/PROJECT_COMPLETE.md](docs/2.FirebaseIntegration/PROJECT_COMPLETE.md) for complete details.
-
-**Quick Dev Menu**: Run `./dev.sh` for an interactive development menu with common commands.
+- 🔐 **Authentication** — Email/password sign-up, sign-in, email verification, password reset
+- 👤 **Profile Setup** — First-login profile flow with privacy/terms agreement
+- 🗑️ **Account Deletion** — Full GDPR-compliant 30-day grace period flow
+- 📊 **Firebase Analytics** — Cross-platform analytics hook (web + native)
+- 🔄 **Force Update System** — Semantic version checking with app store redirect
+- 🌐 **Web Support** — Responsive layout with desktop navigation bar
+- 📱 **EAS Build Config** — Development, preview, and production build profiles
+- 🚀 **OTA Updates** — Expo Updates with channel-based deployment
+- ☁️ **Firebase Hosting** — Web deployment with GitHub Actions CI/CD
+- 📄 **Legal Pages** — Privacy Policy, Terms of Service, Support (placeholder content)
+- 🎨 **GlueStack UI** — Themed components with dark/light mode support
+- 🏗️ **Monorepo** — Shared types, UI components, and utilities packages
 
 ## Project Structure
 
 ```
 .
-├── apps
-│   ├── frontend    # Expo app (React Native + Web)
-│   └── functions   # Firebase Cloud Functions
-├── packages
-│   ├── ui          # Shared UI components
-│   ├── types       # Shared TypeScript types
-│   └── utils       # Shared utilities
-├── docs            # Documentation
-│   └── 2.FirebaseIntegration  # Firebase setup guides
-├── firebase.json   # Firebase configuration
-├── firestore.rules # Firestore security rules
-└── turbo.json      # Turborepo configuration
+├── apps/
+│   ├── frontend/           # Expo app (iOS, Android, Web)
+│   │   ├── app/            # File-based routing (expo-router)
+│   │   │   ├── (tabs)/     # Tab navigation (Dashboard, Profile)
+│   │   │   ├── auth/       # Auth screens (sign-in, sign-up, etc.)
+│   │   │   └── _layout.tsx # Root layout with auth state management
+│   │   ├── components/     # Reusable UI components
+│   │   ├── config/         # Firebase config, app version
+│   │   ├── context/        # React Context providers (Auth)
+│   │   └── hooks/          # Custom hooks (analytics, functions, etc.)
+│   └── functions/          # Firebase Cloud Functions (v2)
+│       └── functions/src/  # Function source code
+├── packages/
+│   ├── types/              # Shared TypeScript types
+│   └── ui/                 # Shared UI components
+├── .github/
+│   └── workflows/          # GitHub Actions (web deploy)
+├── firebase.json           # Firebase project configuration
+├── firestore.rules         # Firestore security rules
+└── turbo.json              # Turborepo task configuration
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-### Development
+### Prerequisites
 
-#### Start Frontend Dev Server
+- [Node.js](https://nodejs.org/) v20+
+- [pnpm](https://pnpm.io/) v10+
+- [Firebase CLI](https://firebase.google.com/docs/cli) (`npm install -g firebase-tools`)
+- [EAS CLI](https://docs.expo.dev/eas/) (`npm install -g eas-cli`) — for native builds
+- A [Firebase project](https://console.firebase.google.com/) with Blaze plan
+
+### 1. Clone & Install
 
 ```bash
-pnpm dev
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git my-app
+cd my-app
+pnpm install
 ```
 
-This will start:
-- Expo dev server (frontend)
-- UI package watcher
-
-#### Start Firebase Emulators (for backend development)
+### 2. Configure Firebase
 
 ```bash
-firebase emulators:start
+# Login to Firebase
+firebase login
+
+# Initialize (or link existing project)
+firebase use --add
 ```
 
-This will start:
-- Firebase Functions emulator (port 5001)
-- Firestore emulator (port 8080)
-- Firebase Auth emulator (port 9099)
-- Emulator UI (port 4000)
-
-### Using Shared UI Components
-
-The `packages/ui` package contains shared React Native components that can be used in the frontend app.
-
-To use them in your Expo app:
-
-```tsx
-import { Button } from '@journey-to-citizen/ui';
-
-function MyScreen() {
-  return (
-    <Button 
-      title="Press me" 
-      onPress={() => alert('Pressed!')} 
-    />
-  );
-}
-```
-
-### Build
+### 3. Set Up Environment Variables
 
 ```bash
-pnpm build
+cp apps/frontend/.env.example apps/frontend/.env
 ```
 
-### Lint
+Fill in the values from your [Firebase Console](https://console.firebase.google.com/) → Project Settings → General → Your Apps → Config.
+
+### 4. Start Development
 
 ```bash
-pnpm lint
+# Interactive dev menu
+./dev.sh
+
+# Or start individually:
+pnpm dev                    # Start Expo dev server
+firebase emulators:start    # Start Firebase emulators
 ```
 
-### Test
+### 5. Configure for Your App
+
+Search and replace these placeholder values:
+
+| Placeholder | File(s) | Replace With |
+|---|---|---|
+| `My App` | `app.config.js` | Your app name |
+| `my-app` | `app.config.js` | Your app slug |
+| `com.yourcompany.myapp` | `app.config.js` | Your bundle ID |
+| `your-expo-username` | `app.config.js` | Your Expo username |
+| `YOUR_EAS_PROJECT_ID` | `app.config.js` | Your EAS project ID |
+| `@my-app` | `package.json` files | Your package org name |
+| `My App` | `AuthBranding.tsx` | Your app branding |
+| Content | `privacy.tsx`, `terms.tsx` | Your legal content |
+
+## 📱 Development
+
+### Dev Helper Script
 
 ```bash
-pnpm test
+./dev.sh
 ```
 
-## Tech Stack
+Interactive menu with options for:
+1. Start Firebase Emulators
+2. Build/Watch Functions
+3. Deploy Functions, Rules, or Everything
+4. View Logs
+5. Run Frontend
 
-- **Monorepo**: Turborepo
-- **Package Manager**: pnpm
-- **Frontend**: Expo (React Native + React Native Web)
-- **Backend**: Firebase Cloud Functions
-- **Database**: Cloud Firestore
-- **Authentication**: Firebase Authentication
-- **Language**: TypeScript
+### Firebase Emulators
 
-## Organization
+| Service | Port | URL |
+|---|---|---|
+| Emulator UI | 4000 | http://localhost:4000 |
+| Functions | 5001 | — |
+| Firestore | 8080 | — |
+| Auth | 9099 | — |
+| Hosting | 5002 | http://localhost:5002 |
 
-Shared packages use the organization name: `@journey-to-citizen`
+Set `EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true` in `.env` to connect the frontend to emulators.
 
-## Next Steps
+### Cloud Functions
 
-- [x] Set up Firebase Authentication
-- [x] Set up Firebase Functions
-- [x] Set up Firestore Database
-- [x] Wire frontend to Firebase Functions
-- [x] **Upgrade to Blaze plan** ✅
-- [x] **Deploy functions to production** ✅
-- [x] **Deploy Firestore rules** ✅
-- [x] **Implement automatic profile fetching** ✅
-- [x] **Create profile setup screen** ✅
-- [ ] Test complete auth + profile flow
-- [ ] Add profile editing UI
-- [ ] Configure GitHub Actions for CI/CD
-- [ ] Add more shared UI components
+The template includes these Firebase Functions (v2 callable):
 
-## 🚀 Production Status
+| Function | Description |
+|---|---|
+| `helloWorld` | Health check endpoint |
+| `getUserInfo` | Fetch authenticated user's profile |
+| `updateUserProfile` | Create/update user profile |
+| `scheduleAccountDeletion` | Schedule account for deletion (30-day grace) |
+| `cancelAccountDeletion` | Cancel a scheduled deletion |
 
-**All systems operational!** 🟢
+## 🏗️ Building
 
-- **Functions**: 3 deployed to `us-central1`
-- **Test Function**: https://us-central1-journey-to-citizen.cloudfunctions.net/helloWorld
-- **Firestore**: Database created with security rules active
-- **Frontend**: Ready to connect (see `hooks/useFirebaseFunctions.ts`)
+### Web
 
-## Documentation
+```bash
+pnpm build:web        # Build web app
+pnpm deploy:web       # Build + deploy to Firebase Hosting
+```
 
-- **🎉 Complete Guide**: [docs/2.FirebaseIntegration/PROJECT_COMPLETE.md](docs/2.FirebaseIntegration/PROJECT_COMPLETE.md)
-- **Quick Start**: [docs/2.FirebaseIntegration/QUICK_START.md](docs/2.FirebaseIntegration/QUICK_START.md)
-- **Deployment Success**: [docs/2.FirebaseIntegration/DEPLOYMENT_SUCCESS.md](docs/2.FirebaseIntegration/DEPLOYMENT_SUCCESS.md)
-- **Functions Guide**: [apps/functions/README.md](apps/functions/README.md)
-- **Development**: Run `./dev.sh` for interactive menu
+### Native (via EAS)
+
+```bash
+# Development builds
+eas build --platform ios --profile development
+eas build --platform android --profile development
+
+# Preview builds (internal testing)
+pnpm --filter app-frontend build:android:preview
+pnpm --filter app-frontend build:ios:preview
+
+# Production builds
+pnpm --filter app-frontend build:android:prod
+pnpm --filter app-frontend build:ios:prod
+```
+
+### OTA Updates
+
+```bash
+# Push update to preview channel
+pnpm --filter app-frontend update:preview "Bug fixes"
+
+# Push update to production channel
+pnpm --filter app-frontend update:production "Bug fixes"
+```
+
+## 🚢 Deployment
+
+### Web (Firebase Hosting)
+
+**Manual:**
+```bash
+pnpm deploy:web
+```
+
+**GitHub Actions:**
+Go to Actions → "Deploy Web to Firebase Hosting" → Run workflow.
+
+Required GitHub Secrets:
+- `EXPO_PUBLIC_FIREBASE_API_KEY`
+- `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `EXPO_PUBLIC_FIREBASE_PROJECT_ID`
+- `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `EXPO_PUBLIC_FIREBASE_APP_ID`
+- `EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID`
+- `FIREBASE_SERVICE_ACCOUNT` (JSON service account key)
+- `FIREBASE_PROJECT_ID`
+
+### Functions
+
+```bash
+pnpm deploy:functions     # Build types + functions, then deploy
+pnpm deploy:rules         # Deploy Firestore security rules
+pnpm deploy:all           # Build web + deploy everything
+```
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|---|---|
+| **Framework** | Expo SDK 54, React Native 0.81 |
+| **Language** | TypeScript 5.9 |
+| **UI Library** | GlueStack UI (themed) |
+| **Navigation** | Expo Router (file-based) |
+| **Backend** | Firebase Cloud Functions v2 |
+| **Database** | Cloud Firestore |
+| **Auth** | Firebase Authentication |
+| **Analytics** | Firebase Analytics |
+| **Monorepo** | Turborepo + pnpm workspaces |
+| **CI/CD** | GitHub Actions + EAS Build |
+| **Web Hosting** | Firebase Hosting |
+| **OTA Updates** | Expo Updates |
+
+## 📄 License
+
+See the [LICENSE](LICENSE) file for details.
 
