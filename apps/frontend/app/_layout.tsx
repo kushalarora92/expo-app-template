@@ -28,7 +28,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { user, loading, needsProfileSetup, profileLoading } = useAuth();
+  const { user, loading, needsProfileSetup, profileLoading, isScheduledForDeletion } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
@@ -38,26 +38,33 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === 'auth';
     const inVerifyEmailScreen = segments[1] === 'verify-email';
     const inProfileSetupScreen = segments[0] === 'profile-setup';
+    const inAccountDeletionScreen = segments[0] === 'account-deletion';
+    const inPublicPage = segments[0] === 'privacy' || segments[0] === 'terms' || segments[0] === 'support';
 
-    if (!user && !inAuthGroup) {
-      // Redirect to sign-in if user is not authenticated
+    if (!user && !inAuthGroup && !inPublicPage) {
+      // Redirect to sign-in if user is not authenticated (except for public pages)
       router.replace('/auth/sign-in' as any);
     } else if (user && !user.emailVerified) {
       // Redirect to verify-email if user is not verified (unless already there)
       if (!inVerifyEmailScreen) {
         router.replace('/auth/verify-email' as any);
       }
+    } else if (user && user.emailVerified && isScheduledForDeletion) {
+      // Block app access if account is scheduled for deletion - show only deletion screen
+      if (!inAccountDeletionScreen) {
+        router.replace('/account-deletion' as any);
+      }
     } else if (user && user.emailVerified && needsProfileSetup) {
       // Redirect to profile setup if user needs to complete profile
       if (!inProfileSetupScreen) {
         router.replace('/profile-setup' as any);
       }
-    } else if (user && user.emailVerified && !needsProfileSetup && (inAuthGroup || inProfileSetupScreen)) {
-      // Only redirect to tabs if user is in auth/setup screens, not if already in tabs
+    } else if (user && user.emailVerified && !needsProfileSetup && !isScheduledForDeletion && (inAuthGroup || inProfileSetupScreen || inAccountDeletionScreen)) {
+      // Only redirect to tabs if user is in auth/setup/deletion screens, not if already in tabs
       router.replace('/(tabs)');
     }
     // If already in tabs group, don't redirect - let them stay on current tab
-  }, [user, loading, needsProfileSetup, profileLoading, segments]);
+  }, [user, loading, needsProfileSetup, profileLoading, isScheduledForDeletion, segments]);
 
   // Show loading screen while auth state and profile are being determined
   if (loading || profileLoading) {
@@ -77,8 +84,33 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
+          <Stack.Screen name="account-deletion" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen 
+            name="privacy" 
+            options={{ 
+              title: 'Privacy Policy',
+              headerShown: true,
+              presentation: 'card',
+            }} 
+          />
+          <Stack.Screen 
+            name="terms" 
+            options={{ 
+              title: 'Terms of Service',
+              headerShown: true,
+              presentation: 'card',
+            }} 
+          />
+          <Stack.Screen 
+            name="support" 
+            options={{ 
+              title: 'Support',
+              headerShown: true,
+              presentation: 'card',
+            }} 
+          />
         </Stack>
       </View>
     </ThemeProvider>

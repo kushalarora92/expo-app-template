@@ -4,6 +4,16 @@
  */
 
 /**
+ * Account deletion status
+ */
+export const DELETION_STATUS = {
+  ACTIVE: 'active',
+  SCHEDULED_FOR_DELETION: 'scheduled_for_deletion',
+} as const;
+
+export type DeletionStatus = typeof DELETION_STATUS[keyof typeof DELETION_STATUS];
+
+/**
  * User profile data structure stored in Firestore
  */
 export interface UserProfile {
@@ -13,6 +23,10 @@ export interface UserProfile {
   status?: 'active' | 'inactive';
   createdAt?: any; // Firestore Timestamp
   updatedAt?: any; // Firestore Timestamp
+  // Account deletion tracking
+  deletionStatus?: DeletionStatus; // Current deletion status (default: 'active')
+  deletionScheduledAt?: any; // Firestore Timestamp - when deletion was requested
+  deletionExecutionDate?: string; // ISO date string - when deletion will execute (30 days after request)
 }
 
 /**

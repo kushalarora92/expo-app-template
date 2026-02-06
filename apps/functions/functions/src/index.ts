@@ -16,6 +16,7 @@ import {
   UserProfile,
   UpdateProfileData,
   ApiResponse,
+  DELETION_STATUS,
 } from "@journey-to-citizen/types";
 
 // Initialize Firebase Admin SDK
@@ -153,6 +154,138 @@ export const updateUserProfile = onCall(
       throw new HttpsError(
         "internal",
         "Failed to update user profile",
+        error
+      );
+    }
+  }
+);
+
+/**
+ * Callable function to schedule account deletion (30-day grace period)
+ * Sets deletion status and schedules permanent deletion after 30 days
+ *
+ * @param {object} request - The request object (no data required)
+ * @returns {object} Deletion scheduling confirmation with date
+ */
+export const scheduleAccountDeletion = onCall(
+  async (request): Promise<ApiResponse<{ deletionDate: string }>> => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "User must be authenticated to call this function"
+      );
+    }
+
+    const userId = request.auth.uid;
+
+    try {
+      logger.info(`Scheduling account deletion for userId: ${userId}`);
+
+      // Calculate deletion date (30 days from now)
+      const now = new Date();
+      const deletionDate = new Date(now);
+      deletionDate.setDate(deletionDate.getDate() + 30);
+
+      // Format as YYYY-MM-DD
+      const deletionDateISO = deletionDate.toISOString().split("T")[0];
+
+      // Update user document with deletion status
+      await db.collection("users").doc(userId).set({
+        deletionStatus: DELETION_STATUS.SCHEDULED_FOR_DELETION,
+        deletionScheduledAt: admin.firestore.FieldValue.serverTimestamp(),
+        deletionExecutionDate: deletionDateISO,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, {merge: true});
+
+      logger.info(
+        `Account deletion scheduled for userId: ${userId}, ` +
+        `deletionDate: ${deletionDateISO}`
+      );
+
+      // TODO: Add Cloud Task for automated deletion after 30 days
+      // TODO: Send email notification about scheduled deletion
+
+      return {
+        success: true,
+        message:
+          `Account deletion scheduled for ${deletionDateISO}. ` +
+          "You have 30 days to cancel.",
+        data: {deletionDate: deletionDateISO},
+      };
+    } catch (error) {
+      logger.error("Error scheduling account deletion:", error);
+      throw new HttpsError(
+        "internal",
+        "Failed to schedule account deletion",
+        error
+      );
+    }
+  }
+);
+
+/**
+ * Callable function to cancel scheduled account deletion
+ * Reactivates the account and removes deletion fields
+ *
+ * @param {object} request - The request object (no data required)
+ * @returns {object} Cancellation confirmation
+ */
+export const cancelAccountDeletion = onCall(
+  async (request): Promise<ApiResponse<null>> => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "User must be authenticated to call this function"
+      );
+    }
+
+    const userId = request.auth.uid;
+
+    try {
+      logger.info(`Cancelling account deletion for userId: ${userId}`);
+
+      // Get user document to check deletion status
+      const userDoc = await db.collection("users").doc(userId).get();
+
+      if (!userDoc.exists) {
+        throw new HttpsError("not-found", "User not found");
+      }
+
+      const userData = userDoc.data();
+
+      if (!userData ||
+          userData.deletionStatus !==
+          DELETION_STATUS.SCHEDULED_FOR_DELETION) {
+        throw new HttpsError(
+          "failed-precondition",
+          "Account is not scheduled for deletion"
+        );
+      }
+
+      // TODO: Cancel Cloud Task if implemented
+
+      // Reactivate account - remove deletion fields
+      await db.collection("users").doc(userId).update({
+        deletionStatus: DELETION_STATUS.ACTIVE,
+        deletionScheduledAt: admin.firestore.FieldValue.delete(),
+        deletionExecutionDate: admin.firestore.FieldValue.delete(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      logger.info(`Account deletion cancelled for userId: ${userId}`);
+
+      return {
+        success: true,
+        message:
+          "Account deletion cancelled successfully. " +
+          "Your account is now active.",
+        data: null,
+      };
+    } catch (error) {
+      logger.error("Error cancelling account deletion:", error);
+      throw new HttpsError(
+        "internal",
+        "Failed to cancel account deletion",
         error
       );
     }

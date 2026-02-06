@@ -23,7 +23,9 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  refreshUserProfile: () => Promise<void>; // Alias for refreshProfile
   needsProfileSetup: boolean;
+  isScheduledForDeletion: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,6 +68,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user.emailVerified && 
     userProfile && 
     userProfile.status === 'inactive'
+  );
+
+  // Check if user's account is scheduled for deletion
+  const isScheduledForDeletion = Boolean(
+    user &&
+    userProfile &&
+    userProfile.deletionStatus === 'scheduled_for_deletion'
   );
 
   useEffect(() => {
@@ -134,7 +143,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetPassword,
     sendVerificationEmail,
     refreshProfile,
+    refreshUserProfile: refreshProfile, // Alias for refreshProfile
     needsProfileSetup,
+    isScheduledForDeletion,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -7,15 +7,17 @@ import { Text, View } from '@/components/Themed';
 import { useAuth } from '@/context/AuthContext';
 import { useFirebaseFunctions } from '@/hooks/useFirebaseFunctions';
 import { useAnalytics, useScreenTracking } from '@/hooks/useAnalytics';
+import DeleteAccountModal from '@/components/DeleteAccountModal';
 
 export default function TabTwoScreen() {
   const { user, userProfile, profileLoading, sendVerificationEmail, refreshProfile, logout } = useAuth();
-  const { updateUserProfile } = useFirebaseFunctions();
+  const { updateUserProfile, scheduleAccountDeletion } = useFirebaseFunctions();
   const router = useRouter();
   const { trackEvent } = useAnalytics();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Track screen view
   useScreenTracking('Profile');
@@ -27,6 +29,30 @@ export default function TabTwoScreen() {
       screen: 'Profile',
       ...params,
     });
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const result = await scheduleAccountDeletion();
+      trackProfileAction('delete_account_confirmed', {
+        deletion_date: result.data?.deletionDate,
+      });
+
+      const successMessage = `Account deletion scheduled for ${result.data?.deletionDate}. You have 30 days to cancel by signing in again.`;
+      if (Platform.OS === 'web') {
+        alert(successMessage);
+      } else {
+        Alert.alert('Account Deletion Scheduled', successMessage);
+      }
+
+      // Refresh profile to pick up deletion status
+      await refreshProfile();
+    } catch (error: any) {
+      trackProfileAction('delete_account_error', {
+        error: error.message,
+      });
+      throw error; // Re-throw so modal can handle it
+    }
   };
 
   const handleEditPress = () => {
@@ -271,8 +297,27 @@ export default function TabTwoScreen() {
             <FontAwesome name="sign-out" size={18} color="#fff" />
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
+
+          {/* Delete Account Button */}
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={() => {
+              trackProfileAction('delete_account_button_click');
+              setShowDeleteModal(true);
+            }}
+          >
+            <Text style={styles.deleteAccountText}>Delete Account</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Delete Account Modal */}
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        userEmail={user?.email || ''}
+      />
     </ScrollView>
   );
 }
@@ -416,5 +461,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff',
     marginLeft: 8,
+  },
+  deleteAccountButton: {
+    marginTop: 12,
+    padding: 14,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    alignItems: 'center',
+  },
+  deleteAccountText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#64748b',
   },
 });
