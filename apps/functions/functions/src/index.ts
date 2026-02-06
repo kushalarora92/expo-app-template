@@ -147,7 +147,7 @@ export const updateUserProfile = onCall(
       return {
         success: true,
         message: "Profile updated successfully",
-        data: userData,
+        data: userData as UserProfile,
       };
     } catch (error) {
       logger.error("Error updating user profile:", error);

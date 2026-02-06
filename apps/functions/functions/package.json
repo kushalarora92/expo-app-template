@@ -8,14 +8,16 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "copy-types": "node ./copy-types.js",
+    "gcp-build": "npm install && tsc"
   },
   "engines": {
     "node": "20"
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@my-app/types": "workspace:*",
+    "@my-app/types": "file:my-app-types-0.0.1.tgz",
     "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.0.1"
   },
