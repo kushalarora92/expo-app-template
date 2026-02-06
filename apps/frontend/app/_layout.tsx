@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-reanimated';
 import { GluestackUIProvider, View, Text } from '@gluestack-ui/themed';
@@ -11,7 +11,10 @@ import { config } from '../gluestack-ui.config';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useVersionCheck } from '@/hooks/useVersionCheck';
 import Colors from '@/constants/Colors';
+import WebContainer from '@/components/WebContainer';
+import { ForceUpdateModal } from '@/components/ForceUpdateModal';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -39,7 +42,7 @@ function RootLayoutNav() {
     const inVerifyEmailScreen = segments[1] === 'verify-email';
     const inProfileSetupScreen = segments[0] === 'profile-setup';
     const inAccountDeletionScreen = segments[0] === 'account-deletion';
-    const inPublicPage = segments[0] === 'privacy' || segments[0] === 'terms' || segments[0] === 'support';
+    const inPublicPage = segments[0] === 'privacy' || segments[0] === 'terms' || segments[0] === 'support' || segments[0] === 'delete-account';
 
     if (!user && !inAuthGroup && !inPublicPage) {
       // Redirect to sign-in if user is not authenticated (except for public pages)
@@ -81,7 +84,8 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <View style={[styles.rootContainer, { backgroundColor: Colors[colorScheme].background }]}>
-        <Stack>
+        <WebContainer>
+          <Stack>
           <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
           <Stack.Screen name="account-deletion" options={{ headerShown: false }} />
@@ -111,9 +115,68 @@ function RootLayoutNav() {
               presentation: 'card',
             }} 
           />
+          <Stack.Screen 
+            name="delete-account" 
+            options={{ 
+              title: 'Delete Account',
+              headerShown: true,
+              presentation: 'card',
+            }} 
+          />
         </Stack>
+        </WebContainer>
       </View>
     </ThemeProvider>
+  );
+}
+
+/**
+ * App content wrapper that includes version check.
+ * Shows UpdateModal if app version is outdated (force or soft update).
+ */
+function AppContent() {
+  const colorScheme = useColorScheme();
+  const { loading: versionLoading, forceUpdate, updateRequired, message, storeUrl } = useVersionCheck();
+  const [softUpdateDismissed, setSoftUpdateDismissed] = React.useState(false);
+
+  // Show loading while checking version
+  if (versionLoading) {
+    return (
+      <View style={[styles.rootContainer, styles.centered, { backgroundColor: Colors[colorScheme].background }]}>
+        <ActivityIndicator size="large" color={Colors[colorScheme].tint} />
+        <Text size="sm" style={{ marginTop: 16, color: Colors[colorScheme].text }}>Checking for updates...</Text>
+      </View>
+    );
+  }
+
+  // Show force update modal if force update is required (blocks app)
+  if (forceUpdate) {
+    return (
+      <ForceUpdateModal
+        message={message}
+        storeUrl={storeUrl}
+        isForceUpdate={true}
+      />
+    );
+  }
+
+  // Show soft update modal if update is needed but not forced (dismissable)
+  if (updateRequired && !softUpdateDismissed) {
+    return (
+      <ForceUpdateModal
+        message={message}
+        storeUrl={storeUrl}
+        isForceUpdate={false}
+        onDismiss={() => setSoftUpdateDismissed(true)}
+      />
+    );
+  }
+
+  // Normal app flow
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }
 
@@ -145,9 +208,7 @@ export default function RootLayout() {
         barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} 
         backgroundColor={Colors[colorScheme].background}
       />
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
+      <AppContent />
     </GluestackUIProvider>
   );
 }
